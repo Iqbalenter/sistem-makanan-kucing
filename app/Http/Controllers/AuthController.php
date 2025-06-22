@@ -68,6 +68,16 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,user',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar. Silakan gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'role.required' => 'Silakan pilih role (Admin atau User).',
+            'role.in' => 'Role yang dipilih tidak valid.',
         ]);
 
         $user = User::create([
@@ -79,6 +89,9 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        // Add success message
+        $request->session()->flash('success', 'Akun berhasil dibuat! Selamat datang, ' . $user->name . '!');
 
         return $this->redirectBasedOnRole();
     }

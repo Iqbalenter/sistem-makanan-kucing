@@ -7,7 +7,7 @@ use App\Http\Controllers\UserController;
 
 // Public routes
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 })->name('home');
 
 // Authentication routes

@@ -81,66 +81,76 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('smart.index') }}">
-                            <i class="fas fa-home me-1"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('smart.rankings') }}">
-                            <i class="fas fa-trophy me-1"></i> Ranking
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('smart.comparison') }}">
-                            <i class="fas fa-chart-bar me-1"></i> Perbandingan
-                        </a>
-                    </li>
-                    
-                    <!-- User Menu Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user me-1"></i>
-                            {{ Auth::user()->name }} (Admin)
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li>
-                                <h6 class="dropdown-header">
-                                    <i class="fas fa-user-circle me-2"></i>
-                                    {{ Auth::user()->name }}
-                                </h6>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('smart.index') }}">
-                                    <i class="fas fa-tachometer-alt me-2"></i>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin logout?')">
-                                        <i class="fas fa-sign-out-alt me-2"></i>
-                                        Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                    
-                    <!-- Alternative: Direct Logout Button (uncomment if dropdown doesn't work) -->
-                    <!--
-                    <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="nav-link btn btn-link text-white" onclick="return confirm('Apakah Anda yakin ingin logout?')" style="border: none; background: none;">
-                                <i class="fas fa-sign-out-alt me-1"></i> Logout
-                            </button>
-                        </form>
-                    </li>
-                    -->
+                    @auth
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('smart.index') }}">
+                                <i class="fas fa-home me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('smart.rankings') }}">
+                                <i class="fas fa-trophy me-1"></i> Ranking
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('smart.comparison') }}">
+                                <i class="fas fa-chart-bar me-1"></i> Perbandingan
+                            </a>
+                        </li>
+                        
+                        <!-- User Menu Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i>
+                                {{ Auth::user()->name }} 
+                                @if(Auth::user()->role == 'admin')
+                                    (Admin)
+                                @endif
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        <i class="fas fa-user-circle me-2"></i>
+                                        {{ Auth::user()->name }}
+                                    </h6>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('smart.index') }}">
+                                        <i class="fas fa-tachometer-alt me-2"></i>
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin logout?')">
+                                            <i class="fas fa-sign-out-alt me-2"></i>
+                                            Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    @else
+                        <!-- Guest Menu -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">
+                                <i class="fas fa-home me-1"></i> Beranda
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">
+                                <i class="fas fa-user-plus me-1"></i> Daftar
+                            </a>
+                        </li>
+                    @endauth
                 </ul>
             </div>
         </div>
@@ -149,7 +159,8 @@
     <!-- Main Content -->
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
+            @auth
+            <!-- Sidebar for Authenticated Users -->
             <div class="col-md-3 col-lg-2 sidebar p-3">
                 <h6 class="text-muted mb-3">MENU UTAMA</h6>
                 <nav class="nav flex-column">
@@ -202,9 +213,10 @@
                     </div>
                 </div>
             </div>
+            @endauth
             
             <!-- Content Area -->
-            <div class="col-md-9 col-lg-10 main-content p-4">
+            <div class="@auth col-md-9 col-lg-10 @else col-12 @endauth main-content p-4">
                 <!-- Flash Messages -->
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">

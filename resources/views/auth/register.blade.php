@@ -203,20 +203,62 @@
                 card.classList.remove('selected');
             });
             
-            // Add selected class to clicked card
-            event.target.closest('.role-card').classList.add('selected');
+            // Add selected class to clicked card  
+            const clickedCard = event.target.closest('.role-card');
+            clickedCard.classList.add('selected');
             
             // Set hidden input value
             document.getElementById('role').value = role;
+            
+            // Remove error styling if exists
+            const errorDiv = document.querySelector('.text-danger.small');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
         }
 
         // Set initial selection if old value exists
         window.addEventListener('DOMContentLoaded', function() {
             const oldRole = document.getElementById('role').value;
             if (oldRole) {
-                selectRole(oldRole);
+                // Find and click the appropriate role card
+                const targetCard = oldRole === 'admin' ? 
+                    document.querySelector('.role-card:first-child') : 
+                    document.querySelector('.role-card:last-child');
+                if (targetCard) {
+                    targetCard.classList.add('selected');
+                }
+            }
+        });
+
+        // Form validation before submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const role = document.getElementById('role').value;
+            if (!role) {
+                e.preventDefault();
+                alert('Silakan pilih role terlebih dahulu (Admin atau User)');
+                
+                // Add visual indicator
+                const roleSection = document.querySelector('.mb-4');
+                roleSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Highlight role cards
+                document.querySelectorAll('.role-card').forEach(card => {
+                    card.style.borderColor = '#dc3545';
+                    card.style.animation = 'shake 0.5s';
+                });
+                
+                return false;
             }
         });
     </script>
+    
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
 </body>
 </html> 
