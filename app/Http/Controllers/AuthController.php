@@ -30,12 +30,31 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'role' => 'required|in:admin,user',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+            'role.required' => 'Silakan pilih role terlebih dahulu.',
+            'role.in' => 'Role yang dipilih tidak valid.',
         ]);
 
         $credentials = $request->only('email', 'password');
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            // Periksa apakah role yang dipilih sesuai dengan role user di database
+            $user = Auth::user();
+            
+            if ($user->role !== $request->role) {
+                Auth::logout();
+                
+                // Redirect kembali dengan error, tapi tidak menyimpan role di old input
+                return redirect()->route('login')
+                    ->withInput($request->except('role'))
+                    ->withErrors(['role' => 'Role yang dipilih tidak sesuai dengan akun Anda.']);
+            }
+            
             $request->session()->regenerate();
             
             return $this->redirectBasedOnRole();
@@ -67,7 +86,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,user',
+            'role' => 'required|in:user',
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Email wajib diisi.',
@@ -76,8 +95,8 @@ class AuthController extends Controller
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'role.required' => 'Silakan pilih role (Admin atau User).',
-            'role.in' => 'Role yang dipilih tidak valid.',
+            'role.required' => 'Role harus user.',
+            'role.in' => 'Hanya role user yang diperbolehkan untuk registrasi.',
         ]);
 
         $user = User::create([

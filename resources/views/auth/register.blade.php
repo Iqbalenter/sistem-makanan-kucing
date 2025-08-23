@@ -39,20 +39,6 @@
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
-        .role-card {
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .role-card:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
-        .role-card.selected {
-            border-color: #667eea;
-            background-color: rgba(102, 126, 234, 0.1);
-        }
     </style>
 </head>
 <body>
@@ -141,39 +127,8 @@
                                    placeholder="Ulangi password yang sama">
                         </div>
 
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <i class="fas fa-user-tag me-2"></i>Pilih Role
-                            </label>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="role-card p-3 h-100" onclick="selectRole('admin')">
-                                        <div class="text-center">
-                                            <i class="fas fa-user-shield text-primary" style="font-size: 2rem;"></i>
-                                            <h6 class="mt-2 mb-2">Admin</h6>
-                                            <small class="text-muted">
-                                                Kelola sistem DSS, data alternatif, dan kriteria
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="role-card p-3 h-100" onclick="selectRole('user')">
-                                        <div class="text-center">
-                                            <i class="fas fa-user text-success" style="font-size: 2rem;"></i>
-                                            <h6 class="mt-2 mb-2">User</h6>
-                                            <small class="text-muted">
-                                                Lihat hasil perhitungan dan ranking makanan kucing
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" name="role" id="role" value="{{ old('role') }}">
-                            @error('role')
-                                <div class="text-danger small mt-2">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <!-- Role otomatis set sebagai user -->
+                        <input type="hidden" name="role" id="role" value="user">
 
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">
@@ -197,68 +152,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function selectRole(role) {
-            // Remove selected class from all cards
-            document.querySelectorAll('.role-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Add selected class to clicked card  
-            const clickedCard = event.target.closest('.role-card');
-            clickedCard.classList.add('selected');
-            
-            // Set hidden input value
-            document.getElementById('role').value = role;
-            
-            // Remove error styling if exists
-            const errorDiv = document.querySelector('.text-danger.small');
-            if (errorDiv) {
-                errorDiv.style.display = 'none';
-            }
-        }
-
-        // Set initial selection if old value exists
-        window.addEventListener('DOMContentLoaded', function() {
-            const oldRole = document.getElementById('role').value;
-            if (oldRole) {
-                // Find and click the appropriate role card
-                const targetCard = oldRole === 'admin' ? 
-                    document.querySelector('.role-card:first-child') : 
-                    document.querySelector('.role-card:last-child');
-                if (targetCard) {
-                    targetCard.classList.add('selected');
-                }
-            }
-        });
-
-        // Form validation before submit
+        // Form validation untuk memastikan data lengkap
         document.querySelector('form').addEventListener('submit', function(e) {
-            const role = document.getElementById('role').value;
-            if (!role) {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('password_confirmation').value.trim();
+            
+            if (!name || !email || !password || !confirmPassword) {
                 e.preventDefault();
-                alert('Silakan pilih role terlebih dahulu (Admin atau User)');
-                
-                // Add visual indicator
-                const roleSection = document.querySelector('.mb-4');
-                roleSection.scrollIntoView({ behavior: 'smooth' });
-                
-                // Highlight role cards
-                document.querySelectorAll('.role-card').forEach(card => {
-                    card.style.borderColor = '#dc3545';
-                    card.style.animation = 'shake 0.5s';
-                });
-                
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Password dan konfirmasi password tidak sama!');
                 return false;
             }
         });
     </script>
-    
-    <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-    </style>
 </body>
 </html> 

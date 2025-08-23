@@ -16,11 +16,11 @@ class AdminUserSeeder extends Seeder
     {
         // Create admin user
         User::updateOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'petshop@pakam.com'],
             [
-                'name' => 'Administrator',
-                'email' => 'admin@admin.com',
-                'password' => Hash::make('admin123'),
+                'name' => 'Petshop Pakam',
+                'email' => 'petshop@pakam.com',
+                'password' => Hash::make('dunia12345'),
                 'role' => 'admin',
             ]
         );
@@ -37,7 +37,7 @@ class AdminUserSeeder extends Seeder
         );
 
         echo "Default users created:\n";
-        echo "Admin: admin@admin.com / admin123\n";
+        echo "Admin: petshop@pakam.com / dunia12345\n";
         echo "User: user@user.com / user123\n";
     }
 }
